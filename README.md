@@ -1,3 +1,62 @@
+# free radius
+
+## intallation
+
+* install on debian
+
+```bash
+sudo apt-get update -y
+sudo apt-get install -y freeradius-utils
+```
+
+## docker-version
+
+We have provided a sample [Dockerfile](radiusTest/Dockerfile)
+to build
+
+```bash
+docker build -t my-radius-test .
+```
+
+First create a `docker network`
+
+```bash
+docker network create --driver=bridge --subnet=192.168.0.0/16 mynet123
+```
+
+On starting the container:
+
+```bash
+docker run --rm --net mynet123 --ip 192.168.1.131 --name my-radius-asus -p 1812-1813:1812-1813/udp my-radius-test -X
+```
+
+where we have set the radius-server statically (on asus router configuration interface) to be `192.168.1.131`
+
+## simple test
+
+```
+$ docker exec -it my-radius-asus /bin/bash
+$ radtest bob test 127.0.0.1 0 testing123
+```
+
+You should be able to see message similar to the following
+
+```bash
+Sent Access-Request Id 35 from 0.0.0.0:45182 to 127.0.0.1:1812 length 73
+        User-Name = "bob"
+        User-Password = "test"
+        NAS-IP-Address = 192.168.1.131
+        NAS-Port = 0
+        Message-Authenticator = 0x00
+        Cleartext-Password = "test"
+Received Access-Accept Id 35 from 127.0.0.1:1812 to 127.0.0.1:45182 length 20
+```
+
+## RADIUS connection
+
+We have set the `SSID` (`ACME_2_4_radius`) corresponding to 2.4GHz to be `WPA-Enterprise` for the RADIUS configuration.
+
+when a device tries to connect to `ACME_2_4_radius`, by entering given user-name and password, he/she should be able to connect to the internet
 
 
 # openvpn
